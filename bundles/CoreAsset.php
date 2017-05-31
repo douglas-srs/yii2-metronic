@@ -5,7 +5,7 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace dlds\metronic\bundles;
+namespace douglassrs\metronic\bundles;
 
 class CoreAsset extends BaseAssetBundle {
 
@@ -13,7 +13,7 @@ class CoreAsset extends BaseAssetBundle {
      * @var array depended packages
      */
     public $depends = [
-        'dlds\metronic\bundles\FontAsset',
+        'douglassrs\metronic\bundles\FontAsset',
         'yii\bootstrap\BootstrapPluginAsset',
     ];
 

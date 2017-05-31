@@ -5,11 +5,11 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace dlds\metronic\traits;
+namespace douglassrs\metronic\traits;
 
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
-use dlds\metronic\bundles\Select2Asset;
+use douglassrs\metronic\bundles\Select2Asset;
 
 /**
  * Html helper

@@ -5,7 +5,7 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace dlds\metronic\bundles;
+namespace douglassrs\metronic\bundles;
 
 class GridViewAsset extends BaseAssetBundle {
 

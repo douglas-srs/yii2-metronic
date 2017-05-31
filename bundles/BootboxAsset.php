@@ -4,13 +4,13 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace dlds\metronic\bundles;
+namespace douglassrs\metronic\bundles;
 
 use Yii;
 
 class BootboxAsset extends BaseAssetBundle {
     public $depends = [
-        'dlds\metronic\bundles\CoreAsset',
+        'douglassrs\metronic\bundles\CoreAsset',
     ];
 
     public $js = [

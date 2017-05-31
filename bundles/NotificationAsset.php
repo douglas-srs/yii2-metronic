@@ -4,7 +4,7 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace  dlds\metronic\bundles;
+namespace  douglassrs\metronic\bundles;
 
 
 /**
@@ -22,6 +22,6 @@ class NotificationAsset extends BaseAssetBundle
     ];
 
     public $depends = [
-        'dlds\metronic\bundles\CoreAsset',
+        'douglassrs\metronic\bundles\CoreAsset',
     ];
 }

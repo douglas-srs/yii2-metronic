@@ -6,7 +6,7 @@
  */
 
 
-namespace dlds\metronic\widgets;
+namespace douglassrs\metronic\widgets;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

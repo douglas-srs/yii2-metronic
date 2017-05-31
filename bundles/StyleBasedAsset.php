@@ -5,10 +5,10 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace dlds\metronic\bundles;
+namespace douglassrs\metronic\bundles;
 
 use yii\helpers\ArrayHelper;
-use dlds\metronic\Metronic;
+use douglassrs\metronic\Metronic;
 
 class StyleBasedAsset extends BaseAssetBundle {
 
@@ -16,7 +16,7 @@ class StyleBasedAsset extends BaseAssetBundle {
      * @var array depended bundles
      */
     public $depends = [
-        'dlds\metronic\bundles\CoreAsset',
+        'douglassrs\metronic\bundles\CoreAsset',
     ];
 
     /**

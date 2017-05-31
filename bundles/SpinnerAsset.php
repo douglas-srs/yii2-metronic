@@ -4,7 +4,7 @@
  * @license http://www.digitaldeals.cz/license/
  */
 
-namespace  dlds\metronic\bundles;
+namespace  douglassrs\metronic\bundles;
 
 /**
  * SpinnerAsset for spinner widget.
@@ -17,6 +17,6 @@ class SpinnerAsset extends BaseAssetBundle
     ];
 
     public $depends = [
-        'dlds\metronic\bundles\CoreAsset',
+        'douglassrs\metronic\bundles\CoreAsset',
     ];
 }
