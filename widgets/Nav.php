@@ -295,8 +295,8 @@ class Nav extends \yii\bootstrap\Nav {
     public static function userItem($label, $photo)
     {
         $lines = [];
-        $lines[] = Html::tag('span', $label, ['class' => 'username username-hide-on-mobile']);
         $lines[] = Html::img($photo, ['alt' => $label, 'class' => 'img-circle']);
+        $lines[] = Html::tag('span', $label, ['class' => 'username username-hide-on-mobile']);        
         return implode("\n", $lines);
     }
 }

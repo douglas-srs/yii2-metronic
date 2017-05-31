@@ -48,6 +48,8 @@ class NavBar extends \yii\bootstrap\NavBar {
      * @var string the url to logo of the brand.
      */
     public $brandWrapperOptions;
+
+    public $topMenu = '';
     
     /**
      * Initializes the widget.
@@ -60,12 +62,26 @@ class NavBar extends \yii\bootstrap\NavBar {
         }
 
         echo Html::beginTag('div', $this->options);
-        echo Html::beginTag('div', ['class' => 'page-header-inner']);
+        echo Html::beginTag('div', ['class' => 'page-header-top']);
+        echo Html::beginTag('div', ['class' => 'container']);
 
         Html::addCssClass($this->brandWrapperOptions, 'page-logo');
         echo Html::beginTag('div', $this->brandWrapperOptions);
         echo $this->renderBrand();
         echo $this->renderToggleButton();
+        echo Html::endTag('div');
+
+
+        echo Html::beginTag('a', ['class' => 'menu-toggler', 'href' => 'javascript:;']);
+        echo Html::endTag('a');
+
+        if (isset($this->topMenu) && !empty($this->topMenu)){
+            echo Html::beginTag('div', ['class' => 'top-menu']);
+            echo $this->topMenu;
+            echo Html::endTag('div');
+        }
+
+        echo Html::endTag('div');
         echo Html::endTag('div');
     }
 
@@ -74,7 +90,6 @@ class NavBar extends \yii\bootstrap\NavBar {
      */
     public function run()
     {
-        echo Html::endTag('div');
         echo Html::endTag('div');
     }
 

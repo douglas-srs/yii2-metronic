@@ -14,6 +14,9 @@ use Yii;
 use yii\helpers\Url;
 use yii\widgets\Menu;
 use yii\widgets\ActiveForm as CoreActiveForm;
+use keygenqt\autocompleteAjax\AutocompleteAjax;
+use app\models\Papeis;
+use yii\widgets\ActiveForm;
 
 /**
  * Horizontal Menu displays a multi-level menu using nested HTML lists.
@@ -140,6 +143,8 @@ class HorizontalMenu extends Menu {
      */
     public $submenuTemplate = "\n<ul class='{class}'>\n{items}\n</ul>\n";
 
+    public $simpleLinkTemplate = '<a href="{url}">{label}</a>';
+
     /**
      * @var string the template used to render the body of a dropdown which is a link.
      * In this template, the token `{label}` will be replaced with the link text;
@@ -160,7 +165,19 @@ class HorizontalMenu extends Menu {
     public function run()
     {
         Html::addCssClass($this->options, 'nav navbar-nav');
-        echo Html::beginTag('div', ['class' => 'page-actions']);
+        echo Html::beginTag('div', ['class' => 'page-header-menu']);
+        echo Html::beginTag('div', ['class' => 'container']);
+        if (!isset($this->search['visible']))
+        {
+            throw new InvalidConfigException("The 'visible' option of search is required.");
+        }
+        else
+        {
+            // do not render seacrh box if not visible
+            if ($this->search['visible'])
+                echo $this->renderSearch();            
+        } 
+        echo Html::beginTag('div', ['class' => 'hor-menu']);
         if ($this->route === null && Yii::$app->controller !== null)
         {
             $this->route = Yii::$app->controller->getRoute();
@@ -173,18 +190,10 @@ class HorizontalMenu extends Menu {
         $options = $this->options;
         $tag = ArrayHelper::remove($options, 'tag', 'ul');
         $data = [$this->renderItems($items)];
-        if (!isset($this->search['visible']))
-        {
-            throw new InvalidConfigException("The 'visible' option of search is required.");
-        }
-        else
-        {
-            // do not render seacrh box if not visible
-            if ($this->search['visible'])
-                $data[] = Html::tag('li', $this->renderSearch());            
-        } 
-        $data[] = Html::tag('li', $this->renderSearch());
+        //$data[] = Html::tag('li', $this->renderSearch());
         echo Html::tag($tag, implode("\n", $data), $options);
+        echo Html::endTag('div');
+        echo Html::endTag('div');
         echo Html::endTag('div');
     }
 
@@ -234,7 +243,11 @@ class HorizontalMenu extends Menu {
             if ($level == 1)
             {
                 Html::addCssClass($options, $itemType);
-                $item['template'] = ($itemType == self::ITEM_TYPE_CLASSIC) ? $this->dropdownLinkTemplate : $this->dropdownLinkMegaTemplate;
+                if ($itemType == self::ITEM_TYPE_CLASSIC && empty($item['items'])){
+                    $item['template'] = $this->simpleLinkTemplate;
+                } else {
+                    $item['template'] = ($itemType == self::ITEM_TYPE_CLASSIC) ? $this->dropdownLinkTemplate : $this->dropdownLinkMegaTemplate;
+                }
                 if ($item['active'])
                 {
                     $item['label'] = Html::tag('span', '', ['class' => 'selected']) . $item['label'];
@@ -342,30 +355,54 @@ class HorizontalMenu extends Menu {
      */
     protected function renderSearch()
     {
-        $defaultFormOptions = ['options' => ['class' => 'sidebar-search']];
+        $defaultFormOptions = ['options' => ['class' => 'search-form']];
         $defaultInputOptions = [
-            'name' => 'search',
+            //'name' => 'search',
             'value' => '',
             'options' => [
-                'placeholder' => 'Search...',
+                //'placeholder' => 'Search...',
                 'class' => 'form-control',
             ]
         ];
         $formOptions = ArrayHelper::merge(ArrayHelper::getValue($this->search, 'form', []), $defaultFormOptions);
         $inputOptions = ArrayHelper::merge(ArrayHelper::getValue($this->search, 'input', []), $defaultInputOptions);
+        //die(print_r($inputOptions, true));
         ob_start();
         ob_implicit_flush(false);
         echo Html::tag('span', '&nbsp;', ['class' => 'hor-menu-search-form-toggler']);
-        echo '<div class="search-form">';
-        CoreActiveForm::begin($formOptions);
+        /*CoreActiveForm::begin($formOptions);
         echo '<div class="input-group">';
         echo Html::input('text', $inputOptions['name'], $inputOptions['value'], $inputOptions['options']);
-        echo '<div class="input-group-btn">';
-        echo '<button type="button" class="btn"></button>';
-        echo '</div>'; // end .input-group-btn
+        echo '<span class="input-group-btn">';
+        echo '<a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a>';
+        echo '</span>'; // end .input-group-btn
         echo '</div>'; // end .input-group
-        echo '</div>'; // end .search-form
-        CoreActiveForm::end();
+
+        echo '<div id="search-resultbox" style="display: none;" class="modal-content">
+            <ul id="search-results">
+            </ul>
+        </div>';
+
+        CoreActiveForm::end();*/
+
+        $model = new Papeis;
+        $form = ActiveForm::begin([
+            'action' => ['papel/search-papel'],
+            'options' => [
+                'class' => 'search-form'
+             ],
+             'fieldConfig' => ['options' => ['class' => 'input-group', 'style']],
+        ]);
+
+        echo $form->field($model, 'papel', ['template' => '<div id="search-upper">{input}</div><span class="input-group-btn"><a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a></span>'])->widget(AutocompleteAjax::classname(), [
+            'multiple' => false,
+            'startQuery' => false,
+            'url' => ['papel/search-papel'],
+            'options' => ['placeholder' => 'Nome do papel'],
+            'afterSelect' => 'function(event, ui) { papel = ui.item; window.location.href = "http://www.comparandus.com.br/detalhes/" + papel.value  }'
+        ])->label(false);
+
+        ActiveForm::end();
 
         return ob_get_clean();
     }
