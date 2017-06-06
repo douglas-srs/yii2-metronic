@@ -14,9 +14,11 @@ use Yii;
 use yii\helpers\Url;
 use yii\widgets\Menu;
 use yii\widgets\ActiveForm as CoreActiveForm;
-use keygenqt\autocompleteAjax\AutocompleteAjax;
+use douglassrs\autocompleteAjax\AutocompleteAjax;
 use app\models\Papeis;
 use yii\widgets\ActiveForm;
+use yii\web\JsExpression;
+use kartik\typeahead\Typeahead;
 
 /**
  * Horizontal Menu displays a multi-level menu using nested HTML lists.
@@ -174,8 +176,9 @@ class HorizontalMenu extends Menu {
         else
         {
             // do not render seacrh box if not visible
-            if ($this->search['visible'])
-                echo $this->renderSearch();            
+            if ($this->search['visible']){
+                echo $this->renderSearch();
+            }
         } 
         echo Html::beginTag('div', ['class' => 'hor-menu']);
         if ($this->route === null && Yii::$app->controller !== null)
@@ -355,52 +358,90 @@ class HorizontalMenu extends Menu {
      */
     protected function renderSearch()
     {
-        $defaultFormOptions = ['options' => ['class' => 'search-form']];
-        $defaultInputOptions = [
+        //$defaultFormOptions = ['options' => ['class' => 'search-form']];
+        //$defaultInputOptions = [
             //'name' => 'search',
-            'value' => '',
-            'options' => [
+        //    'value' => '',
+        //    'options' => [
                 //'placeholder' => 'Search...',
-                'class' => 'form-control',
-            ]
-        ];
-        $formOptions = ArrayHelper::merge(ArrayHelper::getValue($this->search, 'form', []), $defaultFormOptions);
-        $inputOptions = ArrayHelper::merge(ArrayHelper::getValue($this->search, 'input', []), $defaultInputOptions);
+                //'class' => 'form-control',
+        //    ]
+        //];
+        //$formOptions = ArrayHelper::merge(ArrayHelper::getValue($this->search, 'form', []), $defaultFormOptions);
+        //$inputOptions = ArrayHelper::merge(ArrayHelper::getValue($this->search, 'input', []), $defaultInputOptions);
         //die(print_r($inputOptions, true));
         ob_start();
         ob_implicit_flush(false);
-        echo Html::tag('span', '&nbsp;', ['class' => 'hor-menu-search-form-toggler']);
-        /*CoreActiveForm::begin($formOptions);
-        echo '<div class="input-group">';
-        echo Html::input('text', $inputOptions['name'], $inputOptions['value'], $inputOptions['options']);
-        echo '<span class="input-group-btn">';
-        echo '<a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a>';
-        echo '</span>'; // end .input-group-btn
-        echo '</div>'; // end .input-group
-
-        echo '<div id="search-resultbox" style="display: none;" class="modal-content">
-            <ul id="search-results">
-            </ul>
-        </div>';
-
-        CoreActiveForm::end();*/
+        //echo Html::tag('span', '&nbsp;', ['class' => 'hor-menu-search-form-toggler']);
 
         $model = new Papeis;
         $form = ActiveForm::begin([
-            'action' => ['papel/search-papel'],
+            'action' => Url::To(['/detalhes']),
+            'method' => 'get',
             'options' => [
-                'class' => 'search-form'
+                'class' => 'papel-form'
              ],
              'fieldConfig' => ['options' => ['class' => 'input-group', 'style']],
         ]);
 
-        echo $form->field($model, 'papel', ['template' => '<div id="search-upper">{input}</div><span class="input-group-btn"><a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a></span>'])->widget(AutocompleteAjax::classname(), [
+        $model = new Papeis;
+
+        $template = '<div class="papel-container">' .                
+                        '<div class="papel-thumb"><img src="{{image}}"/></div>'. 
+                        '<div class="papel-content">' . 
+                            '<p class="papel-title">{{titulo}}</p>'. 
+                            '<p class="papel-empresa">{{empresa}}</p>'. 
+                       '</div>' .
+                    '</div>';
+
+        echo $form->field($model, 'papel', ['template' => '<div id="search-upper">{input}</div><span class="input-group-btn"><a href="javascript:;" class="papel-search-button btn submit"><i class="icon-magnifier"></i></a></span>'])->widget(Typeahead::classname(), [
+            'name' => 'acao',
+            'attribute' => 'papel',
+            'options' => [
+                'placeholder' => 'Nome da Ação...',
+                //'autofocus'   => "autofocus",
+                'id'          => 'acao'
+            ],
+            'scrollable'    => TRUE,
+            'pluginOptions' => [
+                'highlight' => TRUE,
+                //'minLength' => 3
+            ],
+            'dataset' => [
+                [
+                    'remote' => [
+                        'url'  => Url::to(['/papel/info']) . '/%QUERY',
+                        'wildcard' => '%QUERY',
+                        'ajax' => ['complete' => new JsExpression("function(response)
+                            {
+                                jQuery('#acao').removeClass('loading');
+                            }")]
+                    ],
+                    'limit'  => 10,
+                    'async' => true,                            
+                    'display' => 'titulo',
+                    'templates' => [
+                        'empty' => [
+                          '<div class="alert alert-danger">Papel não encontrado.</div>'
+                        ],
+                        'suggestion' => new JsExpression("Handlebars.compile('{$template}')")
+                    ],
+                ]
+            ],
+            'pluginEvents'  => [
+                "typeahead:selected" => "function(obj, item) { document.location.href ='" . Url::to(['/detalhes']) . "/' + item.url; return false;}",
+                //"typeahead:render" => "function() { var el = jQuery('#busca_papel'); el.preprendTo(el.parent());}",
+                //"typeahead:active" => "function() { jQuery('form.search-form').addClass('open');}",
+            ],
+        ])->label(false);
+
+        /*echo $form->field($model, 'papel', ['template' => '<div id="search-upper">{input}</div><span class="input-group-btn"><a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a></span>'])->widget(AutocompleteAjax::classname(), [
             'multiple' => false,
             'startQuery' => false,
             'url' => ['papel/search-papel'],
             'options' => ['placeholder' => 'Nome do papel'],
             'afterSelect' => 'function(event, ui) { papel = ui.item; window.location.href = "http://www.comparandus.com.br/detalhes/" + papel.value  }'
-        ])->label(false);
+        ])->label(false);*/
 
         ActiveForm::end();
 

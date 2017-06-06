@@ -46,7 +46,7 @@ class CoreAsset extends BaseAssetBundle {
         // 'global/plugins/bootstrap/js/bootstrap.min.js',
         'global/plugins/jquery-slimscroll/jquery.slimscroll.min.js',
         'global/plugins/jquery.blockui.min.js',
-        'global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js',
+        //'global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js',
         'global/plugins/bootstrap-switch/js/bootstrap-switch.min.js',
 
 
