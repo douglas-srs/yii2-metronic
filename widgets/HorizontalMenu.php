@@ -376,7 +376,7 @@ class HorizontalMenu extends Menu {
 
         $model = new Papeis;
         $form = ActiveForm::begin([
-            'action' => Url::To(['/detalhes']),
+            'action' => Url::To(['/acao']),
             'method' => 'get',
             'options' => [
                 'class' => 'papel-form'
@@ -429,7 +429,7 @@ class HorizontalMenu extends Menu {
                 ]
             ],
             'pluginEvents'  => [
-                "typeahead:selected" => "function(obj, item) { document.location.href ='" . Url::to(['/detalhes']) . "/' + item.url; return false;}",
+                "typeahead:selected" => "function(obj, item) { document.location.href ='" . Url::to(['/acao']) . "/' + item.url; return false;}",
                 //"typeahead:render" => "function() { var el = jQuery('#busca_papel'); el.preprendTo(el.parent());}",
                 //"typeahead:active" => "function() { jQuery('form.search-form').addClass('open');}",
             ],
