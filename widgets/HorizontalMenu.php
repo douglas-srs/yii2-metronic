@@ -247,7 +247,8 @@ class HorizontalMenu extends Menu {
             {
                 Html::addCssClass($options, $itemType);
                 if ($itemType == self::ITEM_TYPE_CLASSIC && empty($item['items'])){
-                    $item['template'] = $this->simpleLinkTemplate;
+                    if (empty($item['template']))
+                        $item['template'] = $this->simpleLinkTemplate;
                 } else {
                     $item['template'] = ($itemType == self::ITEM_TYPE_CLASSIC) ? $this->dropdownLinkTemplate : $this->dropdownLinkMegaTemplate;
                 }
@@ -336,7 +337,14 @@ class HorizontalMenu extends Menu {
      */
     protected function renderItem($item)
     {
-        $item['url'] = ArrayHelper::getValue($item, 'url', '#');
+        if (isset($item['url']) && !is_array($item['url'])){
+            $url = $item['url'];
+        }
+        else {
+            $item['url'] = ArrayHelper::getValue($item, 'url', '#');
+            $url = Url::toRoute($item['url']);
+        }
+
         $item['label'] = ArrayHelper::getValue($item, 'badge', '') . $item['label'];
         $item['icon'] = ArrayHelper::getValue($item, 'icon', '');
         if ($item['icon'])
@@ -346,7 +354,7 @@ class HorizontalMenu extends Menu {
         $template = ArrayHelper::getValue($item, 'template', $this->linkTemplate);
 
         return strtr($template, [
-            '{url}' => Url::toRoute($item['url']),
+            '{url}' => $url,
             '{label}' => $item['label'],
             '{icon}' => $item['icon'],
         ]);
